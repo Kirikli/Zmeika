@@ -22,6 +22,9 @@ const generateField = () => {
   for (let rowIndex = 0; rowIndex < 20; rowIndex += 1) {
     for (let columnIndex = 0; columnIndex < 20; columnIndex += 1) {
       // создаем div
+      <div clas="cell">
+        gameField.classList.add('cell')
+      </div>
       // добавляем ему класс cell
       // вставляем в game field
     }

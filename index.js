@@ -22,15 +22,11 @@ const onButtonPlayClicked = () => {
 
   generateField();
   generateSnake();
+  generateApple();
+  //renderSnake();
 
 }
 
-//const generateSnake = () => {
-  //for (let i = 0; i<5; i+= 1){
- //   if(appState.cells.find((cell) => cell.rowIndex === 5 && cell.columnIndex === 2){}   
- // }
-
-//}
 const generateField = () => {
   const gameField = document.querySelector("#game-field");
   for (let rowIndex = 0; rowIndex < 20; rowIndex += 1) {
@@ -53,19 +49,40 @@ const generateField = () => {
 }
 
 const generateSnake = () =>{
-  let a = appState.cells.find((cell) => cell.rowIndex === 5 && cell.columnIndex === 2);
-  a.classList.add('cellsnake')
+  let snake = document.createElement('div');
+  snake = [(appState.cells.find((cell) => cell.rowIndex === 8 && cell.columnIndex === 10)),
+  (appState.cells.find((cell) => cell.rowIndex === 8 && cell.columnIndex === 9)),
+  (appState.cells.find((cell) => cell.rowIndex === 8 && cell.columnIndex === 8))];
+
+   snake[0].element.classList.add("cellheadsnake");
+
+  for(let i=1; i< snake.length ; i++){
+    snake[i].element.classList.add("cellsnake");
+  } 
+
 }
-// const generateSnake = () => {
-//   const gameSnake = document.querySelector("#snake");
-//   for (let rowIndex = 0; rowIndex < 1; rowIndex += 1) {
-//     for (let columnIndex = 0; columnIndex < 3; columnIndex += 1) {
-//       let div = document.createElement('div');
-//       div.classList.add("cellsnake");
-//       gameSnake.appendChild(div);
-//     }
-//   }
-// }
+
+/*  const renderSnake = () =>{
+  snake= generateSnake(); 
+  snake[0].element.classList.add("cellheadsnake");
+
+  for(let i=1; i< snake.length ; i++){
+    snake[i].element.classList.add("cellsnake");
+  } 
+  
+}*/ 
+
+const generateApple =() =>{
+  let apple = document.createElement('div');
+  apple = appState.cells.find((cell) => cell.rowIndex === Math.floor(Math.random() * (20 - 1)) + 1 && cell.columnIndex === Math.floor(Math.random() * (20 - 1)) + 1); 
+  
+  if ((apple.element.classList.contains("cellsnake"))||(apple.element.classList.contains("cellheadsnake"))){
+    let apple = document.createElement('div');
+    apple = appState.cells.find((cell) => cell.rowIndex === Math.floor(Math.random() * (20 - 1)) + 1 && cell.columnIndex === Math.floor(Math.random() * (20 - 1)) + 1);
+  }
+
+  apple.element.classList.add('cellapple');
+}
 
 const main = () => {
   if (document.readyState === 'complete') onDOMIsReady();

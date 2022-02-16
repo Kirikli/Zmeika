@@ -11,6 +11,7 @@ const appState = {
     [8, 8],
     [8, 9],
   ],
+  cutTail: null,
   currentAppleNumber: 0,
   maxAppleNumber: 1,
 };
@@ -41,7 +42,7 @@ const onButtonPlayClicked = () => {
   generateSnake();
   gameLoop();
   initMoveEventListener();
-  heightSnake();
+
 }
 
 const generateField = () => {
@@ -104,9 +105,9 @@ const gameLoop = () => {
   console.log('GAME_LOOP_TICK');
   if (appState.currentAppleNumber < appState.maxAppleNumber) generateApple();
   moveSnake();
+  heightSnake();
   render();
   setTimeout(gameLoop, 750);
-
 }
 
 const generateApple = () => {
@@ -134,7 +135,9 @@ const generateApple = () => {
 
 const moveSnake = () => {
   const oldTail = appState.snakePosition.pop();
-  findCell(...oldTail).isSnake = false;
+  appState.cutTail = findCell(...oldTail);
+  appState.cutTail.isSnake = false;
+
   const oldHeadCell = findCell(...appState.snakePosition[0]);
   oldHeadCell.isHeadSnake = false;
 
@@ -149,35 +152,29 @@ const moveSnake = () => {
 
 
 const heightSnake = () => {
-  for (const cell of appState.cells) {
-
-    let headsnake = findCell(...appState.snakePosition[0]);
-    let apple = appState.cells.filter((cell)=>cell.isFruit)
-    
-
-    if((headsnake.isHeadSnake == apple.isFruit )){
-      appState.snakePosition.push(
-      [appState.snakePosition[0][0] + appState.snakeMoveDelta.column, appState.snakePosition[0][1] + appState.snakeMoveDelta.row],);
-    }
+  let snakeHeadCell = findCell(...appState.snakePosition[0]);
+  if (snakeHeadCell.isFruit) {
+    appState.cutTail.isSnake = true;
+    appState.snakePosition.push([snakeHeadCell.columnIndex, snakeHeadCell.rowIndex]);
   }
 }
 
 
 const initMoveEventListener = () => {
   window.addEventListener('keyup', function (event) {
-    if (event.code === 'KeyW') {
+    if (event.code === 'KeyW' ) {
       appState.snakeMoveDelta.row = -1;
       appState.snakeMoveDelta.column = 0;
     }
-    if (event.code == 'KeyA') {
+    if (event.code == 'KeyA' ) {
       appState.snakeMoveDelta.column = -1;
       appState.snakeMoveDelta.row = 0;
     }
-    if (event.code == 'KeyD') {
+    if (event.code == 'KeyD' ) {
       appState.snakeMoveDelta.column = 1;
       appState.snakeMoveDelta.row = 0;
     }
-    if (event.code == 'KeyS') {
+    if (event.code == 'KeyS' ) {
       appState.snakeMoveDelta.row = 1;
       appState.snakeMoveDelta.column = 0;
     }

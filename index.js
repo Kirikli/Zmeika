@@ -8,8 +8,8 @@ const appState = {
   },
   snakePosition: [
     [8, 7],
-    [8, 9],
     [8, 8],
+    [8, 9],
   ],
   currentAppleNumber: 0,
   maxAppleNumber: 1,
@@ -41,6 +41,7 @@ const onButtonPlayClicked = () => {
   generateSnake();
   gameLoop();
   initMoveEventListener();
+  heightSnake();
 }
 
 const generateField = () => {
@@ -104,7 +105,7 @@ const gameLoop = () => {
   if (appState.currentAppleNumber < appState.maxAppleNumber) generateApple();
   moveSnake();
   render();
-  setTimeout(gameLoop, 1000);
+  setTimeout(gameLoop, 750);
 
 }
 
@@ -132,52 +133,53 @@ const generateApple = () => {
 }
 
 const moveSnake = () => {
-  const oldCellSnake = appState.cells.filter((cell) => cell.isSnake);
-  const newCellSnake = [];
+  const oldTail = appState.snakePosition.pop();
+  findCell(...oldTail).isSnake = false;
+  const oldHeadCell = findCell(...appState.snakePosition[0]);
+  oldHeadCell.isHeadSnake = false;
 
-  for (const cell of oldCellSnake) {
-    cell.isSnake = false;
-    const newCell = findCell(
-      cell.columnIndex + appState.snakeMoveDelta.column,
-      cell.rowIndex + appState.snakeMoveDelta.row,
-    );
-    newCellSnake.push(newCell);
-    if (cell.isHeadSnake) {
-      newCell.isHeadSnake = true;
-      cell.isHeadSnake = false;
+  appState.snakePosition.unshift(
+    [appState.snakePosition[0][0] + appState.snakeMoveDelta.column, appState.snakePosition[0][1] + appState.snakeMoveDelta.row],
+  );
+
+  const newHeadCell = findCell(...appState.snakePosition[0]);
+  newHeadCell.isHeadSnake = true;
+  newHeadCell.isSnake = true;
+}
+
+
+const heightSnake = () => {
+  for (const cell of appState.cells) {
+
+    let headsnake = findCell(...appState.snakePosition[0]);
+    let apple = appState.cells.filter((cell)=>cell.isFruit)
+    
+
+    if((headsnake.isHeadSnake == apple.isFruit )){
+      appState.snakePosition.push(
+      [appState.snakePosition[0][0] + appState.snakeMoveDelta.column, appState.snakePosition[0][1] + appState.snakeMoveDelta.row],);
     }
   }
-  for (const cell of newCellSnake) {
-    cell.isSnake = true;
-  }
-  console.log(oldCellSnake, newCellSnake)
 }
+
 
 const initMoveEventListener = () => {
   window.addEventListener('keyup', function (event) {
     if (event.code === 'KeyW') {
+      appState.snakeMoveDelta.row = -1;
       appState.snakeMoveDelta.column = 0;
-      appState.snakeMoveDelta.column = appState.snakeMoveDelta.column + 1;
-      appState.columnPosition += 1;
-      console.log('Верх')
     }
     if (event.code == 'KeyA') {
+      appState.snakeMoveDelta.column = -1;
       appState.snakeMoveDelta.row = 0;
-      appState.snakeMoveDelta.row = appState.snakeMoveDelta.row - 1;
-      appState.rowPosition -= 1;
-      console.log('Влево')
     }
     if (event.code == 'KeyD') {
+      appState.snakeMoveDelta.column = 1;
       appState.snakeMoveDelta.row = 0;
-      appState.snakeMoveDelta.row = appState.snakeMoveDelta.row + 1;
-      appState.rowPosition += 1;
-      console.log('Вправо')
     }
     if (event.code == 'KeyS') {
+      appState.snakeMoveDelta.row = 1;
       appState.snakeMoveDelta.column = 0;
-      appState.snakeMoveDelta.column = appState.snakeMoveDelta.column - 1;
-      appState.rowPosition -= 1;
-      console.log('Вниз')
     }
   })
 };
@@ -192,28 +194,3 @@ const main = () => {
 };
 
 main();
-
-/*
-const generateSnake = () =>{
-  let snake = document.createElement('div');
-  snake = [(appState.cells.find((cell) => cell.rowIndex === 8 && cell.columnIndex === 10)),
-  (appState.cells.find((cell) => cell.rowIndex === 8 && cell.columnIndex === 9)),
-  (appState.cells.find((cell) => cell.rowIndex === 8 && cell.columnIndex === 8))];
-
-   snake[0].element.classList.add("cellheadsnake");
-
-  for(let i=1; i< snake.length ; i++){
-    snake[i].element.classList.add("cellsnake");
-  } 
-
-}
-
-  const renderSnake = () =>{
-  snake= generateSnake(); 
-  snake[0].element.classList.add("cellheadsnake");
-
-  for(let i=1; i< snake.length ; i++){
-    snake[i].element.classList.add("cellsnake");
-  } 
-  
-}*/

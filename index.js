@@ -40,7 +40,7 @@ const onButtonPlayClicked = () => {
   generateField();
   generateSnake();
   gameLoop();
-  // initMoveEventListener();
+  initMoveEventListener();
 }
 
 const generateField = () => {
@@ -159,13 +159,25 @@ const initMoveEventListener = () => {
       appState.snakeMoveDelta.column = 0;
       appState.snakeMoveDelta.column = appState.snakeMoveDelta.column + 1;
       appState.columnPosition += 1;
+      console.log('Верх')
     }
     if (event.code == 'KeyA') {
       appState.snakeMoveDelta.row = 0;
-      appState.isHeadSnake.row = appState.isHeadSnake.row + 1;
+      appState.snakeMoveDelta.row = appState.snakeMoveDelta.row - 1;
+      appState.rowPosition -= 1;
+      console.log('Влево')
+    }
+    if (event.code == 'KeyD') {
+      appState.snakeMoveDelta.row = 0;
+      appState.snakeMoveDelta.row = appState.snakeMoveDelta.row + 1;
       appState.rowPosition += 1;
-      appState.snakeMoveDelta.column = appState.snakeMoveDelta.column + 1;
-      appState.columnPosition += 1;
+      console.log('Вправо')
+    }
+    if (event.code == 'KeyS') {
+      appState.snakeMoveDelta.column = 0;
+      appState.snakeMoveDelta.column = appState.snakeMoveDelta.column - 1;
+      appState.rowPosition -= 1;
+      console.log('Вниз')
     }
   })
 };

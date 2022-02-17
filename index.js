@@ -6,6 +6,10 @@ const appState = {
     row: -1,
     column: 0,
   },
+  lastSnakeMoveDelta: {
+    row: -1,
+    column: 0,
+  },
   snakePosition: [
     [8, 7],
     [8, 8],
@@ -14,6 +18,7 @@ const appState = {
   cutTail: null,
   currentAppleNumber: 0,
   maxAppleNumber: 1,
+  isGameOver: false,
 };
 
 function getRandomInt(min, max) {
@@ -38,17 +43,21 @@ const onButtonPlayClicked = () => {
   //Ищем second-screen и убираем ему класс hidden
   document.querySelector("#second-screen").classList.remove('hidden');
 
+
   generateField();
   generateSnake();
   gameLoop();
   initMoveEventListener();
 
+
 }
 
 const generateField = () => {
   const gameField = document.querySelector("#game-field");
-  for (let rowIndex = 0; rowIndex < 20; rowIndex += 1) {
-    for (let columnIndex = 0; columnIndex < 20; columnIndex += 1) {
+  gameField.style['grid-template-columns'] = `repeat(${appState.columnsNumber}, 1fr)`;
+  gameField.style['grid-template-rows'] = `repeat(${appState.rowsNumber}, 1fr)`;
+  for (let rowIndex = 0; rowIndex < appState.rowsNumber; rowIndex += 1) {
+    for (let columnIndex = 0; columnIndex < appState.columnsNumber; columnIndex += 1) {
       //создаем div
       let div = document.createElement('div');
       //добавляем ему класс cell
@@ -107,8 +116,15 @@ const gameLoop = () => {
   moveSnake();
   heightSnake();
   render();
-  setTimeout(gameLoop, 750);
+  gameOver();
+  appState.lastSnakeMoveDelta = { ...appState.snakeMoveDelta };
+  if (!appState.isGameOver) setTimeout(gameLoop, 300);
+  else {
+    document.querySelector("#second-screen").classList.add('hidden')
+    document.querySelector("#third-screen").classList.remove('hidden');
+  }
 }
+
 
 const generateApple = () => {
   let fruitIsGenerated = false;
@@ -143,38 +159,65 @@ const moveSnake = () => {
 
   appState.snakePosition.unshift(
     [appState.snakePosition[0][0] + appState.snakeMoveDelta.column, appState.snakePosition[0][1] + appState.snakeMoveDelta.row],
-  );
+    )
+  
 
   const newHeadCell = findCell(...appState.snakePosition[0]);
+  if(appState.snakePosition[0].row <0 || appState.snakePosition[0].column <0|| appState.snakePosition[0].row > appState.rowsNumber|| appState.snakePosition[0].column > appState.columnsNumber) {
+    appState.isGameOver = true;
+      return;
+  }else{
   newHeadCell.isHeadSnake = true;
   newHeadCell.isSnake = true;
+  }
 }
-
 
 const heightSnake = () => {
   let snakeHeadCell = findCell(...appState.snakePosition[0]);
   if (snakeHeadCell.isFruit) {
-    appState.cutTail.isSnake = true;
-    appState.snakePosition.push([snakeHeadCell.columnIndex, snakeHeadCell.rowIndex]);
+    snakeHeadCell.isFruit = false;
+    snakeHeadCell.isSnake = true;
+    appState.snakePosition.push([appState.cutTail.columnIndex, appState.cutTail.rowIndex]);
+    generateApple();
   }
 }
 
+const gameOver = () => {
+  const [head, ...tail] = appState.snakePosition;
+  for (const [column, row] of tail) {
+    if (head[0] === column && head[1] === row) {
+      appState.isGameOver = true;
+      return;
+    }
+  }
+
+  // for (const [column, row] of appState.snakePosition) {
+  //   for (let i = 0; i < appState.snakePosition.length - 1; i++) {
+  //     for (let j = i + 1; j < appState.snakePosition.length; j++) {
+  //       if (snakePosition[i][0] == snakePosition[j][0]) {
+  //         document.querySelector("#second-screen").classList.add('hidden')
+  //         document.querySelector("#third-screen").classList.remove('hidden');
+  //       }
+  //     }
+  //   }
+  // }
+}
 
 const initMoveEventListener = () => {
   window.addEventListener('keyup', function (event) {
-    if (event.code === 'KeyW' ) {
-      appState.snakeMoveDelta.row = -1;
+    if (event.code === 'KeyW' && appState.lastSnakeMoveDelta.row != 1) {
       appState.snakeMoveDelta.column = 0;
+      appState.snakeMoveDelta.row = -1;
     }
-    if (event.code == 'KeyA' ) {
+    if (event.code == 'KeyA' && appState.lastSnakeMoveDelta.column != 1) {
       appState.snakeMoveDelta.column = -1;
       appState.snakeMoveDelta.row = 0;
     }
-    if (event.code == 'KeyD' ) {
+    if (event.code == 'KeyD' && appState.lastSnakeMoveDelta.column != -1) {
       appState.snakeMoveDelta.column = 1;
       appState.snakeMoveDelta.row = 0;
     }
-    if (event.code == 'KeyS' ) {
+    if (event.code == 'KeyS' && appState.lastSnakeMoveDelta.row != -1) {
       appState.snakeMoveDelta.row = 1;
       appState.snakeMoveDelta.column = 0;
     }

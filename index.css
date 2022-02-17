@@ -30,6 +30,8 @@
 }
 
 #game-field {
+  width: min-content;
+  height: min-content;
   display: grid;
   grid-template-columns: repeat(20, 1fr);
   grid-template-rows: repeat(20, 1fr);
@@ -75,3 +77,4 @@
   background-color: rgb(80, 10, 243);
   box-sizing: border-box;
 }
+

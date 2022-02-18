@@ -118,7 +118,7 @@ const gameLoop = () => {
   render();
   gameOver();
   appState.lastSnakeMoveDelta = { ...appState.snakeMoveDelta };
-  if (!appState.isGameOver) setTimeout(gameLoop, 300);
+  if (!appState.isGameOver) setTimeout(gameLoop, 600);
   else {
     document.querySelector("#second-screen").classList.add('hidden')
     document.querySelector("#third-screen").classList.remove('hidden');
@@ -159,17 +159,15 @@ const moveSnake = () => {
 
   appState.snakePosition.unshift(
     [appState.snakePosition[0][0] + appState.snakeMoveDelta.column, appState.snakePosition[0][1] + appState.snakeMoveDelta.row],
-    )
+  )
   
+  let snakeHeadPosition = findCell(...appState.snakePosition[0]);
+  console.log(snakeHeadPosition);
 
   const newHeadCell = findCell(...appState.snakePosition[0]);
-  if(appState.snakePosition[0].row <0 || appState.snakePosition[0].column <0|| appState.snakePosition[0].row > appState.rowsNumber|| appState.snakePosition[0].column > appState.columnsNumber) {
-    appState.isGameOver = true;
-      return;
-  }else{
   newHeadCell.isHeadSnake = true;
   newHeadCell.isSnake = true;
-  }
+
 }
 
 const heightSnake = () => {
@@ -190,17 +188,6 @@ const gameOver = () => {
       return;
     }
   }
-
-  // for (const [column, row] of appState.snakePosition) {
-  //   for (let i = 0; i < appState.snakePosition.length - 1; i++) {
-  //     for (let j = i + 1; j < appState.snakePosition.length; j++) {
-  //       if (snakePosition[i][0] == snakePosition[j][0]) {
-  //         document.querySelector("#second-screen").classList.add('hidden')
-  //         document.querySelector("#third-screen").classList.remove('hidden');
-  //       }
-  //     }
-  //   }
-  // }
 }
 
 const initMoveEventListener = () => {

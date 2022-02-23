@@ -43,13 +43,10 @@ const onButtonPlayClicked = () => {
   //Ищем second-screen и убираем ему класс hidden
   document.querySelector("#second-screen").classList.remove('hidden');
 
-
   generateField();
   generateSnake();
   gameLoop();
   initMoveEventListener();
-
-
 }
 
 const generateField = () => {
@@ -118,13 +115,17 @@ const gameLoop = () => {
   render();
   gameOver();
   appState.lastSnakeMoveDelta = { ...appState.snakeMoveDelta };
-  if (!appState.isGameOver) setTimeout(gameLoop, 600);
+  if (!appState.isGameOver) setTimeout(gameLoop, 300);
   else {
-    document.querySelector("#second-screen").classList.add('hidden')
-    document.querySelector("#third-screen").classList.remove('hidden');
+    reStartGame();
   }
 }
 
+const reStartGame = () => {
+  document.querySelector("#second-screen").classList.add('hidden')
+  document.querySelector("#first-screen").classList.remove('hidden');
+  window.location.reload();
+}
 
 const generateApple = () => {
   let fruitIsGenerated = false;
@@ -160,9 +161,13 @@ const moveSnake = () => {
   appState.snakePosition.unshift(
     [appState.snakePosition[0][0] + appState.snakeMoveDelta.column, appState.snakePosition[0][1] + appState.snakeMoveDelta.row],
   )
-  
+
   let snakeHeadPosition = findCell(...appState.snakePosition[0]);
-  console.log(snakeHeadPosition);
+  
+  if (snakeHeadPosition==undefined){
+    appState.isGameOver = true;
+    return;
+  }
 
   const newHeadCell = findCell(...appState.snakePosition[0]);
   newHeadCell.isHeadSnake = true;
@@ -171,12 +176,17 @@ const moveSnake = () => {
 }
 
 const heightSnake = () => {
-  let snakeHeadCell = findCell(...appState.snakePosition[0]);
-  if (snakeHeadCell.isFruit) {
-    snakeHeadCell.isFruit = false;
-    snakeHeadCell.isSnake = true;
-    appState.snakePosition.push([appState.cutTail.columnIndex, appState.cutTail.rowIndex]);
-    generateApple();
+  try {
+    let snakeHeadCell = findCell(...appState.snakePosition[0]);
+    if (snakeHeadCell.isFruit) {
+      snakeHeadCell.isFruit = false;
+      snakeHeadCell.isSnake = true;
+      appState.snakePosition.push([appState.cutTail.columnIndex, appState.cutTail.rowIndex]);
+      generateApple();
+    }
+  } catch {
+    appState.isGameOver = true;
+    return;
   }
 }
 
